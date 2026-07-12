@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Allowlist</h1>
+
+<form method="POST" style="margin-bottom: 24px; background:#171a23; padding:16px; border-radius:8px;">
+    <div class="form-row">
+        <label>SHA-256 Hash</label>
+        <input type="text" name="file_hash" placeholder="64-character hash" size="70" required>
+    </div>
+    <div class="form-row">
+        <label>Name</label>
+        <input type="text" name="name" placeholder="e.g. Firefox" required>
+    </div>
+    <div class="form-row">
+        <label>Publisher (optional)</label>
+        <input type="text" name="publisher" placeholder="e.g. Mozilla">
+    </div>
+    <button type="submit">Add to Allowlist</button>
+</form>
+
+<p style="color:#9aa3b5; font-size:13px;">
+    Tip: use the <a href="{{ url_for('hash_tool') }}">Hash Tool</a> to compute a SHA-256 hash for any file before adding it here.
+</p>
+
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Publisher</th>
+        <th>Hash</th>
+        <th>Added</th>
+        <th></th>
+    </tr>
+    {% for e in entries %}
+    <tr>
+        <td>{{ e.name }}</td>
+        <td>{{ e.publisher }}</td>
+        <td><code>{{ e.file_hash[:16] }}...</code></td>
+        <td>{{ e.added_at | int }}</td>
+        <td>
+            <form class="inline" method="POST" action="{{ url_for('allowlist_delete', entry_id=e.id) }}">
+                <button type="submit" class="danger">Remove</button>
+            </form>
+        </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5">Allowlist is empty. Everything will be treated as unauthorized.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

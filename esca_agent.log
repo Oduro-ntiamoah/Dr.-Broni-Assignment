@@ -1,0 +1,14 @@
+2026-07-12 01:02:41,181 [INFO] ESCA Agent M1 starting - polling every 2s
+2026-07-12 01:02:42,872 [INFO] Baseline established: 299 processes currently running
+2026-07-12 01:02:52,934 [INFO] NEW PROCESS DETECTED | PID=23136 | Name=conhost.exe | Path=C:\Windows\System32\conhost.exe | Time=2026-07-12T01:02:52.934829
+2026-07-12 01:02:52,939 [INFO] NEW PROCESS DETECTED | PID=22228 | Name=git.exe | Path=C:\Program Files\Git\cmd\git.exe | Time=2026-07-12T01:02:52.939814
+2026-07-12 01:02:58,968 [INFO] NEW PROCESS DETECTED | PID=9156 | Name=chrome.exe | Path=C:\Program Files\Google\Chrome\Application\chrome.exe | Time=2026-07-12T01:02:58.968494
+2026-07-12 01:04:01,314 [INFO] NEW PROCESS DETECTED | PID=22872 | Name=chrome.exe | Path=C:\Program Files\Google\Chrome\Application\chrome.exe | Time=2026-07-12T01:04:01.314845
+2026-07-12 01:04:03,329 [INFO] NEW PROCESS DETECTED | PID=19884 | Name=git.exe | Path=C:\Program Files\Git\cmd\git.exe | Time=2026-07-12T01:04:03.329839
+2026-07-12 01:04:29,427 [INFO] NEW PROCESS DETECTED | PID=12008 | Name=conhost.exe | Path=C:\Windows\System32\conhost.exe | Time=2026-07-12T01:04:29.427989
+2026-07-12 01:04:39,576 [INFO] NEW PROCESS DETECTED | PID=15096 | Name=git.exe | Path=C:\Program Files\Git\cmd\git.exe | Time=2026-07-12T01:04:39.576165
+2026-07-12 01:04:39,577 [INFO] NEW PROCESS DETECTED | PID=10820 | Name=conhost.exe | Path=C:\Windows\System32\conhost.exe | Time=2026-07-12T01:04:39.577142
+2026-07-12 01:04:53,635 [INFO] NEW PROCESS DETECTED | PID=7416 | Name=chrome.exe | Path=C:\Program Files\Google\Chrome\Application\chrome.exe | Time=2026-07-12T01:04:53.635845
+2026-07-12 01:05:05,728 [INFO] NEW PROCESS DETECTED | PID=16716 | Name=backgroundTaskHost.exe | Path=C:\Windows\System32\backgroundTaskHost.exe | Time=2026-07-12T01:05:05.728464
+2026-07-12 01:05:15,773 [INFO] NEW PROCESS DETECTED | PID=17624 | Name=smartscreen.exe | Path=C:\Windows\System32\smartscreen.exe | Time=2026-07-12T01:05:15.773837
+2026-07-12 01:05:32,150 [INFO] ESCA Agent M1 stopped by user.

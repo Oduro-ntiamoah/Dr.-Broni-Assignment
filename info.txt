@@ -1,0 +1,54 @@
+main.py
+
+"""
+ESCA Agent - Main
+Ties together process detection, allowlist checking, blocking/quarantine,
+and reporting into a single monitoring loop.
+
+Run on the Ubuntu endpoint:
+    sudo python3 main.py
+
+(sudo is required so the agent can kill processes it doesn't own and
+strip permissions during quarantine.)
+"""
+
+reporter.py
+
+"""
+ESCA Agent - Reporting
+Sends detection/violation events to the dashboard. If the dashboard
+is unreachable, events are queued locally and flushed once the
+connection is restored.
+"""
+
+m1_process_monitor.py
+
+"""
+ESCA Agent - M1: Local Process Detection
+------------------------------------------
+Polls running processes at a set interval and logs any NEW process
+that wasn't seen in the previous poll. No allowlist/blocking logic yet
+- this milestone only proves detection works.
+
+Run on the Ubuntu VM:
+    python3 m1_process_monitor.py
+
+Requires:
+    pip3 install psutil
+"""
+
+config.py
+
+"""
+ESCA Agent - Configuration
+Adjust these values for your environment.
+"""
+
+app.py
+
+"""
+ESCA Dashboard - Central monitoring & control server.
+Run on the Windows host:
+    pip install flask flask_sqlalchemy
+    python app.py
+"""

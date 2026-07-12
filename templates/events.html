@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Event Log {% if selected_device %}&mdash; {{ selected_device }}{% endif %}</h1>
+
+<div class="form-row">
+    <a href="{{ url_for('events_view') }}">All devices</a>
+    {% for d in devices %}
+        &nbsp;|&nbsp;<a href="{{ url_for('events_view', device=d.device_id) }}">{{ d.device_id }}</a>
+    {% endfor %}
+</div>
+
+<table>
+    <tr>
+        <th>Time</th>
+        <th>Device</th>
+        <th>Type</th>
+        <th>Process</th>
+        <th>PID</th>
+        <th>Path</th>
+        <th>Action</th>
+        <th>Detail</th>
+    </tr>
+    {% for e in events %}
+    <tr>
+        <td>{{ e.timestamp_str() }}</td>
+        <td>{{ e.device_id }}</td>
+        <td>
+            {% if e.event_type == 'violation' %}
+                <span class="badge badge-violation">violation</span>
+            {% elif e.event_type == 'allowed' %}
+                <span class="badge badge-allowed">allowed</span>
+            {% else %}
+                <span class="badge badge-heartbeat">{{ e.event_type }}</span>
+            {% endif %}
+        </td>
+        <td>{{ e.process_name }}</td>
+        <td>{{ e.pid }}</td>
+        <td><code>{{ e.file_path }}</code></td>
+        <td>{{ e.action_taken }}</td>
+        <td>{{ e.detail }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="8">No events yet.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Devices</h1>
+<table>
+    <tr>
+        <th>Device ID</th>
+        <th>Status</th>
+        <th>First Seen</th>
+        <th>Last Seen</th>
+        <th>Events</th>
+    </tr>
+    {% for d in devices %}
+    <tr>
+        <td>{{ d.device_id }}</td>
+        <td>
+            {% if d.is_online() %}
+                <span class="badge badge-online">Online</span>
+            {% else %}
+                <span class="badge badge-offline">Offline</span>
+            {% endif %}
+        </td>
+        <td>{{ d.first_seen | int }}</td>
+        <td>{{ d.last_seen_str() }}</td>
+        <td><a href="{{ url_for('events_view', device=d.device_id) }}">View log</a></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5">No devices have reported in yet. Start the agent on an endpoint to see it here.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}
