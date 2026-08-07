@@ -7,11 +7,14 @@ from functools import wraps
 from flask import Flask, jsonify, request, render_template, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 
-API_KEY = "esca-demo-key-001"  # must match agent/config.py
+import config
+
+API_KEY = config.API_KEY
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///esca.db"
-app.config["SECRET_KEY"] = "dev-secret-change-me"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
+    "ESCA_DATABASE_URI", "sqlite:///esca.db")
+app.config["SECRET_KEY"] = os.environ.get("ESCA_SECRET_KEY", "dev-secret-change-me")
 db = SQLAlchemy(app)
 
 
@@ -57,7 +60,7 @@ class Event(db.Model):
 
 
 # ---------------------------------------------------------------------------
-# Auth helper (simple shared API key for agent requests)
+# Auth helpers
 # ---------------------------------------------------------------------------
 
 def require_api_key(f):
@@ -65,6 +68,29 @@ def require_api_key(f):
     def wrapper(*args, **kwargs):
         if request.headers.get("X-API-Key") != API_KEY:
             return jsonify({"error": "unauthorized"}), 401
+        return f(*args, **kwargs)
+    return wrapper
+
+
+def _check_web_auth(username, password):
+    """Optional simple auth for the web UI (configure via ESCA_WEB_USER/PASS)."""
+    if not config.WEB_USER:
+        return True  # auth disabled
+    return username == config.WEB_USER and password == config.WEB_PASS
+
+
+def require_web_auth(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if not config.WEB_USER:
+            return f(*args, **kwargs)
+        auth = request.authorization
+        if not auth or not _check_web_auth(auth.username, auth.password):
+            return (
+                jsonify({"error": "authentication required"}),
+                401,
+                {"WWW-Authenticate": 'Basic realm="ESCA Dashboard"'},
+            )
         return f(*args, **kwargs)
     return wrapper
 
@@ -124,17 +150,20 @@ def api_heartbeat():
 # ---------------------------------------------------------------------------
 
 @app.route("/")
+@require_web_auth
 def index():
     return redirect(url_for("devices_view"))
 
 
 @app.route("/devices")
+@require_web_auth
 def devices_view():
     devices = Device.query.order_by(Device.last_seen.desc()).all()
     return render_template("devices.html", devices=devices)
 
 
 @app.route("/events")
+@require_web_auth
 def events_view():
     device_filter = request.args.get("device")
     query = Event.query
@@ -146,6 +175,7 @@ def events_view():
 
 
 @app.route("/allowlist", methods=["GET", "POST"])
+@require_web_auth
 def allowlist_view():
     if request.method == "POST":
         file_hash = request.form.get("file_hash", "").strip().lower()
@@ -168,6 +198,7 @@ def allowlist_view():
 
 
 @app.route("/allowlist/delete/<int:entry_id>", methods=["POST"])
+@require_web_auth
 def allowlist_delete(entry_id):
     entry = AllowlistEntry.query.get_or_404(entry_id)
     db.session.delete(entry)
@@ -181,6 +212,7 @@ def allowlist_delete(entry_id):
 # ---------------------------------------------------------------------------
 
 @app.route("/allowlist/hash-tool", methods=["GET", "POST"])
+@require_web_auth
 def hash_tool():
     computed_hash = None
     filename = None
@@ -198,4 +230,16 @@ def hash_tool():
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    print("=" * 60)
+    print("ESCA Dashboard")
+    print(f"  Listening on    : {config.SERVER_HOST}:{config.SERVER_PORT}")
+    print(f"  LAN URL for VMs : http://{config.LAN_IP}:{config.SERVER_PORT}")
+    print(f"  Agent dashboard : {config.DASHBOARD_URL}")
+    print(f"  API key         : {config.API_KEY}")
+    if config.WEB_USER:
+        print(f"  Web UI auth     : enabled (user: {config.WEB_USER})")
+    else:
+        print("  Web UI auth     : DISABLED (set ESCA_WEB_USER/ESCA_WEB_PASS to enable)")
+    print("  Debug mode      : %s" % ("ON" if config.SERVER_DEBUG else "OFF"))
+    print("=" * 60)
+    app.run(host=config.SERVER_HOST, port=config.SERVER_PORT, debug=config.SERVER_DEBUG)
